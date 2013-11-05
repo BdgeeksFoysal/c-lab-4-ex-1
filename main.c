@@ -1,7 +1,69 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+
+#define MAX_ROWS 100
+
+struct Word_S{
+	char content[20];
+	int count;
+};
+
+struct Word_S read_word(char []);
 
 int main(int argc, char const *argv[]){
 	FILE *fp_in, *fp_out;
+	struct Word_S *words_array[10*MAX_ROWS];
+	struct Word_S words;
+	char word[20];
+	int counter;
+
+	fp_in = fopen(argv[1], "r");
+	fp_out = fopen(argv[2], "w");
+
+	if(argc != 3){
+		printf("You\'ve to pass three inputs!\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if(fp_in == NULL || fp_out == NULL){
+		printf("couldn't open input or output file!\n");
+		exit(EXIT_FAILURE);
+	}
+
+	counter = 0;
+	while(!feof(fp_in) && fscanf(fp_in, "%s", word) && counter < MAX_ROWS){
+		words = read_word(word);
+		words_array[counter] = &words;
+
+		printf("el: %d content: %s\n", counter, words_array[counter]->content);
+		counter++;
+	}
+	printf("el: %d content: %s\n", 0, words_array[0]->content);
+		
+	for (counter = 0; counter < MAX_ROWS; ++counter){
+		if(words_array[counter] != NULL){
+			//printf("el: %d content: %s\n", counter, words_array[counter]->content);
+		}
+	}
+
 	return 0;
 }
+
+struct Word_S read_word(char word[]){
+	struct Word_S word_s;
+
+	strcpy(word_s.content, word);
+	word_s.count = 1;
+
+	return word_s;
+}
+/*
+	while(!feof(fp_in) && fscanf(fp_in, "%s", word) && counter < MAX_ROWS){
+		words = read_word(word);
+		printf("word : %s\t", words.content);
+		printf("total: %d\n", words.count);
+		counter++;
+	}
+*/
