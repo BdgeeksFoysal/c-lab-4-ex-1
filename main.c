@@ -5,17 +5,16 @@
 
 #define MAX_ROWS 100
 
-struct Word_S{
-	char content[20];
+struct{
+	char *content;
 	int count;
-};
+} typedef Word_S;
 
-struct Word_S read_word(char []);
+Word_S *read_word_from_file(char *word);
 
 int main(int argc, char const *argv[]){
 	FILE *fp_in, *fp_out;
-	struct Word_S *words_array[10*MAX_ROWS];
-	struct Word_S words;
+	Word_S *words_array[10 * MAX_ROWS * sizeof(Word_S)] = {NULL};
 	char word[20];
 	int counter;
 
@@ -33,29 +32,25 @@ int main(int argc, char const *argv[]){
 	}
 
 	counter = 0;
-	while(!feof(fp_in) && fscanf(fp_in, "%s", word) && counter < MAX_ROWS){
-		words = read_word(word);
-		words_array[counter] = &words;
-
-		printf("el: %d content: %s\n", counter, words_array[counter]->content);
+	while(!feof(fp_in) && fscanf(fp_in, "%s", word) && counter < 10*MAX_ROWS){
+		words_array[counter] = read_word_from_file(word);
+		printf("el: %d content: %s\n", counter-1, words_array[counter-1]->content);
 		counter++;
 	}
-	printf("el: %d content: %s\n", 0, words_array[0]->content);
-		
-	for (counter = 0; counter < MAX_ROWS; ++counter){
-		if(words_array[counter] != NULL){
-			//printf("el: %d content: %s\n", counter, words_array[counter]->content);
-		}
+	
+	for (counter = 0; counter < 10*MAX_ROWS; ++counter){
+		if(words_array[counter] != NULL)
+			printf("el: %d content: %s\n", counter, words_array[counter]->content);
 	}
 
 	return 0;
 }
 
-struct Word_S read_word(char word[]){
-	struct Word_S word_s;
+Word_S *read_word_from_file(char *word){
+	Word_S *word_s = malloc(sizeof(Word_S));
 
-	strcpy(word_s.content, word);
-	word_s.count = 1;
+	word_s->content = word;
+	word_s->count = 1;
 
 	return word_s;
 }
