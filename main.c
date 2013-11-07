@@ -10,11 +10,12 @@ struct{
 	int count;
 } typedef Word_S;
 
-Word_S *read_word_from_file(char *word);
+Word_S *create_struct_from_word(char *word);
+void print_word(Word_S *word_s);
 
 int main(int argc, char const *argv[]){
 	FILE *fp_in, *fp_out;
-	Word_S *words_array[10 * MAX_ROWS * sizeof(Word_S)] = {NULL};
+	Word_S *words_array[10 * MAX_ROWS] = {NULL};
 	char word[20];
 	int counter;
 
@@ -32,33 +33,40 @@ int main(int argc, char const *argv[]){
 	}
 
 	counter = 0;
-	while(!feof(fp_in) && fscanf(fp_in, "%s", word) && counter < 10*MAX_ROWS){
-		words_array[counter] = read_word_from_file(word);
-		printf("el: %d content: %s\n", counter-1, words_array[counter-1]->content);
+	while(!feof(fp_in) && fscanf(fp_in, "%s", word)){
+		words_array[counter] = create_struct_from_word(word);
 		counter++;
 	}
 	
 	for (counter = 0; counter < 10*MAX_ROWS; ++counter){
-		if(words_array[counter] != NULL)
-			printf("el: %d content: %s\n", counter, words_array[counter]->content);
+		print_word(words_array[counter]);
 	}
 
 	return 0;
 }
 
-Word_S *read_word_from_file(char *word){
+Word_S *create_struct_from_word(char *word){
 	Word_S *word_s = malloc(sizeof(Word_S));
+	int i;
 
-	word_s->content = word;
+	//allocate memory for the word
+	word_s->content = malloc(strlen(word+1) * sizeof(char));
+
+	//turn the string into lower case
+	//loop through each element of the word and turn each of them into lower case
+	for (i = 0; i < strlen(word); ++i){
+		word[i] = (char)tolower(word[i]);
+	}
+
+	//copy the string into struct content
+	strcpy(word_s->content, word);
+
 	word_s->count = 1;
 
 	return word_s;
 }
-/*
-	while(!feof(fp_in) && fscanf(fp_in, "%s", word) && counter < MAX_ROWS){
-		words = read_word(word);
-		printf("word : %s\t", words.content);
-		printf("total: %d\n", words.count);
-		counter++;
-	}
-*/
+
+void print_word(Word_S *word_s){
+	if(word_s != NULL)
+		printf("Word: %s Total: %d\n", word_s->content, word_s->count);
+}
